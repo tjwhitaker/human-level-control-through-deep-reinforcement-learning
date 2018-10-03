@@ -1,3 +1,17 @@
+import gym
+import numpy as np
+
+import torch
+import torchvision.transforms as T
+
+from PIL import Image
+
+resizer = T.Compose([
+	T.ToPILImage(),
+	T.Resize(40, interpolation=Image.CUBIC),
+	T.ToTensor()
+])
+
 def init():
 	return gym.make('CartPole-v0').unwrapped
 
@@ -22,4 +36,4 @@ def get_screen(world, screen_width, device):
 	screen = screen[:, :, slice_range]
 	screen = np.ascontiguousarray(screen, dtype=np.float32) / 255
 	screen = torch.from_numpy(screen)
-	return resize(screen).unsqueeze(0).to(device)
+	return resizer(screen).unsqueeze(0).to(device)
