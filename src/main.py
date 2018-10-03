@@ -7,7 +7,7 @@ from itertools import count
 # Config
 screen_width = 600
 target_update = 10
-iterations = 5
+iterations = 500
 durations = []
 
 device = torch.device('cuda')
