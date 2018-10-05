@@ -20,7 +20,10 @@ world.reset()
 agent = model.Agent(device)
 
 for i in range(iterations):
+	# Initialize environment 
 	world.reset()
+
+	# Get current state
 	last_screen = environment.get_screen(world, screen_width, device)
 	current_screen = environment.get_screen(world, screen_width, device)
 	state = current_screen - last_screen

@@ -15,8 +15,10 @@ epsilon_start = 0.9
 epsilon_end = 0.05
 epsilon_decay = 200
 
+# Memory representation of states
 Transition = namedtuple('Transition', ('state', 'action', 'next_state', 'reward'))
 
+# Deep Q Network
 class DQN(nn.Module):
 	def __init__(self):
 		super(DQN, self).__init__()
@@ -34,6 +36,7 @@ class DQN(nn.Module):
 		x = F.relu(self.bn3(self.conv3(x)))
 		return self.head(x.view(x.size(0), -1))
 
+# Memory representation for our agent
 class ReplayMemory(object):
 	def __init__(self, capacity):
 		self.capacity = capacity
@@ -48,6 +51,7 @@ class ReplayMemory(object):
 	def __len__(self):
 		return len(self.memory)
 
+# Agent that performs, remembers and learns actions
 class Agent():
 	def __init__(self, device):
 		self.device = device
@@ -61,6 +65,7 @@ class Agent():
 		self.memory.push(*args)
 
 	def select_action(self, state):
+		# Select an action according to an epsilon greedy approach
 		sample = random.random()
 		epsilon_threshold = epsilon_end + (epsilon_start - epsilon_end) * math.exp(-1. * self.steps_done / epsilon_decay) 
 		self.steps_done += 1
@@ -74,12 +79,14 @@ class Agent():
 		if len(self.memory) < batch_size:
 			return
 
+		# Sample from our memory
 		transitions = self.memory.sample(batch_size)
 		batch = Transition(*zip(*transitions))
 
 		non_final_mask = torch.tensor(tuple(map(lambda s: s is not None, batch.next_state)), device=self.device, dtype=torch.uint8)
 		non_final_next_states = torch.cat([s for s in batch.next_state if s is not None])
 
+		# Concatenate our tensors
 		state_batch = torch.cat(batch.state)
 		action_batch = torch.cat(batch.action)
 		reward_batch = torch.cat(batch.reward)
@@ -91,6 +98,7 @@ class Agent():
 
 		expected_state_action_values = (next_state_values * gamma) + reward_batch
 
+		# Compute loss between our state action and expectations
 		loss = F.smooth_l1_loss(state_action_values, expected_state_action_values.unsqueeze(1))
 
 		self.optimizer.zero_grad()
@@ -100,3 +108,4 @@ class Agent():
 			param.grad.data.clamp_(-1, 1)
 
 		self.optimizer.step()
+		

@@ -1,5 +1,10 @@
 # Human-Level Control Through Deep Reinforcement Learning
 
+Source: https://storage.googleapis.com/deepmind-media/dqn/DQNNaturePaper.pdf  
+Authors: Volodymyr Mnih, Koray Kavukcuoglu, David Silver, Andrei A. Rusu, Joel Veness, Marc G. Bellemare, Alex Graves, Martin Riedmiller, Andreas K. Fidjeland, Georg Ostrovski, Stig Petersen, Charles Beattie, Amir Sadik, Ioannis Antonoglou, Helen King, Dharshan Kumaran, Daan Wierstra, Shane Legg & Demis Hassabis
+
+This is a pytorch implementation of Deep Q Networks as described in the paper above. 
+
 ## Requirements + Versions
 
 - [Python 3.6](https://www.python.org/)

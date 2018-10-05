@@ -6,20 +6,24 @@ import torchvision.transforms as T
 
 from PIL import Image
 
+# Resize frames we grab from gym and convert to tensor
 resizer = T.Compose([
 	T.ToPILImage(),
 	T.Resize(40, interpolation=Image.CUBIC),
 	T.ToTensor()
 ])
 
+# Start cartpole application through gym
 def init():
 	return gym.make('CartPole-v0').unwrapped
 
+# Get cart location with respect to center
 def get_cart_location(world, screen_width):
 	world_width = world.x_threshold * 2
 	scale = screen_width / world_width
 	return int(world.state[0] * scale + screen_width / 2.0)
 
+# Get screen tensor from gym application
 def get_screen(world, screen_width, device):
 	screen = world.render(mode='rgb_array').transpose((2, 0, 1))
 	screen = screen[:, 160:320]
