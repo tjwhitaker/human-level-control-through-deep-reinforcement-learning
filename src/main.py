@@ -1,42 +1,42 @@
 import environment
 import model
+import settings
+
 import torch
 
 from itertools import count
 
 # Config
-screen_width = 600
-target_update = 10
-iterations = 500
-durations = []
-
-device = torch.device('cuda')
+settings.init()
 
 # Environment Setup
 world = environment.init()
 world.reset()
 
+# Log how long our agent lasts for each iteration
+durations = []
+
 # Training
-agent = model.Agent(device)
+agent = model.Agent(DEVICE)
 
 for i in range(iterations):
 	# Initialize environment 
 	world.reset()
 
 	# Get current state
-	last_screen = environment.get_screen(world, screen_width, device)
-	current_screen = environment.get_screen(world, screen_width, device)
+	last_screen = environment.get_screen(world, SCREEN_WIDTH, DEVICE)
+	current_screen = environment.get_screen(world, SCREEN_WIDTH, DEVICE)
 	state = current_screen - last_screen
 
 	for t in count():
 		# Select and perform an action
 		action = agent.select_action(state)
 		_, reward, done, _ = world.step(action.item())
-		reward = torch.tensor([reward], device=device)
+		reward = torch.tensor([reward], device=DEVICE)
 
 		# Observe new state
 		last_screen = current_screen
-		current_screen = environment.get_screen(world, screen_width, device)
+		current_screen = environment.get_screen(world, SCREEN_WIDTH, DEVICE)
 
 		if not done:
 			next_state = current_screen - last_screen
@@ -57,7 +57,7 @@ for i in range(iterations):
 			break
 
 	# Update the target network
-	if i % target_update == 0:
+	if i % TARGET_UPDATE == 0:
 		agent.target_net.load_state_dict(agent.policy_net.state_dict())
 
 world.render()

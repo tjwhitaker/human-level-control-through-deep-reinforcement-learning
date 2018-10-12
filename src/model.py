@@ -8,13 +8,6 @@ import torch.optim as optim
 
 from collections import deque, namedtuple
 
-# Config
-batch_size = 128
-gamma = 0.999
-epsilon_start = 0.9
-epsilon_end = 0.05
-epsilon_decay = 200
-
 # Memory representation of states
 Transition = namedtuple('Transition', ('state', 'action', 'next_state', 'reward'))
 
@@ -67,7 +60,7 @@ class Agent():
 	def select_action(self, state):
 		# Select an action according to an epsilon greedy approach
 		sample = random.random()
-		epsilon_threshold = epsilon_end + (epsilon_start - epsilon_end) * math.exp(-1. * self.steps_done / epsilon_decay) 
+		epsilon_threshold = EPSILON_END + (EPSILON_START - EPSILON_END) * math.exp(-1. * self.steps_done / EPSILON_DECAY) 
 		self.steps_done += 1
 		if sample < epsilon_threshold:
 			return torch.tensor([[random.randrange(2)]], device=self.device, dtype=torch.long)
@@ -76,11 +69,11 @@ class Agent():
 				return self.policy_net(state).max(1)[1].view(1, 1)
 
 	def optimize_model(self):
-		if len(self.memory) < batch_size:
+		if len(self.memory) < BATCH_SIZE:
 			return
 
 		# Sample from our memory
-		transitions = self.memory.sample(batch_size)
+		transitions = self.memory.sample(BATCH_SIZE)
 		batch = Transition(*zip(*transitions))
 
 		non_final_mask = torch.tensor(tuple(map(lambda s: s is not None, batch.next_state)), device=self.device, dtype=torch.uint8)
@@ -93,10 +86,10 @@ class Agent():
 
 		state_action_values = self.policy_net(state_batch).gather(1, action_batch)
 
-		next_state_values = torch.zeros(batch_size, device=self.device)
+		next_state_values = torch.zeros(BATCH_SIZE, device=self.device)
 		next_state_values[non_final_mask] = self.target_net(non_final_next_states).max(1)[0].detach()
 
-		expected_state_action_values = (next_state_values * gamma) + reward_batch
+		expected_state_action_values = (next_state_values * GAMMA) + reward_batch
 
 		# Compute loss between our state action and expectations
 		loss = F.smooth_l1_loss(state_action_values, expected_state_action_values.unsqueeze(1))
