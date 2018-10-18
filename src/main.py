@@ -1,13 +1,8 @@
 import environment
 import model
-import settings
-
 import torch
-
 from itertools import count
-
-# Config
-settings.init()
+from settings import DEVICE, SCREEN_WIDTH, TARGET_UPDATE, ITERATIONS
 
 # Environment Setup
 world = environment.init()
@@ -19,7 +14,7 @@ durations = []
 # Training
 agent = model.Agent(DEVICE)
 
-for i in range(iterations):
+for i in range(ITERATIONS):
 	# Initialize environment 
 	world.reset()
 

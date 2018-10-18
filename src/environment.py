@@ -1,9 +1,7 @@
 import gym
 import numpy as np
-
 import torch
 import torchvision.transforms as T
-
 from PIL import Image
 
 # Resize frames we grab from gym and convert to tensor

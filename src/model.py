@@ -1,12 +1,11 @@
 import random
 import math
-
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
-
 from collections import deque, namedtuple
+from settings import EPSILON_START, EPSILON_END, EPSILON_DECAY, GAMMA, BATCH_SIZE
 
 # Memory representation of states
 Transition = namedtuple('Transition', ('state', 'action', 'next_state', 'reward'))
